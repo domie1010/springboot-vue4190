@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ZhangjieDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.kecheng_id as kechengId
+        ,a.zhangjie_name as zhangjieName
+        ,a.zhangjie_clicknum as zhangjieClicknum
+        ,a.zhangjie_xuhao as zhangjieXuhao
+        ,a.zhangjie_video as zhangjieVideo
+        ,a.zhangjie_content as zhangjieContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZhangjieView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,kecheng.kecheng_name as kechengName
+        ,kecheng.kecheng_uuid_number as kechengUuidNumber
+        ,kecheng.kecheng_address as kechengAddress
+        ,kecheng.kecheng_photo as kechengPhoto
+        ,kecheng.kecheng_file as kechengFile
+        ,kecheng.kecheng_video as kechengVideo
+        ,kecheng.kecheng_types as kechengTypes
+        ,kecheng.kecheng_time as kechengTime
+        ,kecheng.kecheng_content as kechengContent
+        ,kecheng.kecheng_delete as kechengDelete
+
+        FROM zhangjie  a
+        left JOIN kecheng kecheng ON a.kecheng_id = kecheng.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.kechengId != null and params.kechengId != ''">
+                and (
+                    a.kecheng_id = #{params.kechengId}
+                )
+            </if>
+            <if test=" params.zhangjieName != '' and params.zhangjieName != null and params.zhangjieName != 'null' ">
+                and a.zhangjie_name like CONCAT('%',#{params.zhangjieName},'%')
+            </if>
+            <if test="params.zhangjieClicknumStart != null and params.zhangjieClicknumStart != ''">
+                <![CDATA[  and a.zhangjie_clicknum >= #{params.zhangjieClicknumStart}   ]]>
+            </if>
+            <if test="params.zhangjieClicknumEnd != null and params.zhangjieClicknumEnd != ''">
+                <![CDATA[  and a.zhangjie_clicknum <= #{params.zhangjieClicknumEnd}   ]]>
+            </if>
+             <if test="params.zhangjieClicknum != null and params.zhangjieClicknum != ''">
+                and a.zhangjie_clicknum = #{params.zhangjieClicknum}
+             </if>
+            <if test="params.zhangjieXuhaoStart != null and params.zhangjieXuhaoStart != ''">
+                <![CDATA[  and a.zhangjie_xuhao >= #{params.zhangjieXuhaoStart}   ]]>
+            </if>
+            <if test="params.zhangjieXuhaoEnd != null and params.zhangjieXuhaoEnd != ''">
+                <![CDATA[  and a.zhangjie_xuhao <= #{params.zhangjieXuhaoEnd}   ]]>
+            </if>
+             <if test="params.zhangjieXuhao != null and params.zhangjieXuhao != ''">
+                and a.zhangjie_xuhao = #{params.zhangjieXuhao}
+             </if>
+            <if test=" params.zhangjieVideo != '' and params.zhangjieVideo != null and params.zhangjieVideo != 'null' ">
+                and a.zhangjie_video like CONCAT('%',#{params.zhangjieVideo},'%')
+            </if>
+            <if test=" params.zhangjieContent != '' and params.zhangjieContent != null and params.zhangjieContent != 'null' ">
+                and a.zhangjie_content like CONCAT('%',#{params.zhangjieContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断课程的id不为空 -->
+            <if test=" params.kechengIdNotNull != '' and params.kechengIdNotNull != null and params.kechengIdNotNull != 'null' ">
+                and a.kecheng_id IS NOT NULL
+            </if>
+            <if test=" params.kechengName != '' and params.kechengName != null and params.kechengName != 'null' ">
+                and kecheng.kecheng_name like CONCAT('%',#{params.kechengName},'%')
+            </if>
+            <if test=" params.kechengUuidNumber != '' and params.kechengUuidNumber != null and params.kechengUuidNumber != 'null' ">
+                and kecheng.kecheng_uuid_number like CONCAT('%',#{params.kechengUuidNumber},'%')
+            </if>
+            <if test=" params.kechengAddress != '' and params.kechengAddress != null and params.kechengAddress != 'null' ">
+                and kecheng.kecheng_address like CONCAT('%',#{params.kechengAddress},'%')
+            </if>
+            <if test=" params.kechengVideo != '' and params.kechengVideo != null and params.kechengVideo != 'null' ">
+                and kecheng.kecheng_video like CONCAT('%',#{params.kechengVideo},'%')
+            </if>
+            <if test="params.kechengTypes != null  and params.kechengTypes != ''">
+                and kecheng.kecheng_types = #{params.kechengTypes}
+            </if>
+
+            <if test=" params.kechengTimeStart != '' and params.kechengTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(kecheng.kecheng_time) >= UNIX_TIMESTAMP(#{params.kechengTimeStart}) ]]>
+            </if>
+            <if test=" params.kechengTimeEnd != '' and params.kechengTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(kecheng.kecheng_time) <= UNIX_TIMESTAMP(#{params.kechengTimeEnd}) ]]>
+            </if>
+            <if test="params.kechengTime != null and params.kechengTime != ''">
+                and a.kecheng_time = #{params.kechengTime}
+            </if>
+            <if test=" params.kechengContent != '' and params.kechengContent != null and params.kechengContent != 'null' ">
+                and kecheng.kecheng_content like CONCAT('%',#{params.kechengContent},'%')
+            </if>
+            <if test="params.kechengDeleteStart != null  and params.kechengDeleteStart != '' ">
+                <![CDATA[  and kecheng.kecheng_delete >= #{params.kechengDeleteStart}   ]]>
+            </if>
+            <if test="params.kechengDeleteEnd != null  and params.kechengDeleteEnd != '' ">
+                <![CDATA[  and kecheng.kecheng_delete <= #{params.kechengDeleteEnd}   ]]>
+            </if>
+            <if test="params.kechengDelete != null  and params.kechengDelete != '' ">
+                and kecheng.kecheng_delete = #{params.kechengDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(kecheng.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(kecheng.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
